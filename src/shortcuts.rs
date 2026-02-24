@@ -94,4 +94,8 @@ pub static SHORTCUTS: &[ShortCut] = &[
         event: "alt+y",
         description: "Copy selected message to clipboard",
     },
+    ShortCut {
+        event: "ctrl+o",
+        description: "Edit message in external editor",
+    },
 ];

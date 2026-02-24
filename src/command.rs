@@ -227,6 +227,7 @@ pub enum Command {
     OpenFile,
     #[strum(props(desc = "Toggle mute for the selected channel"))]
     ToggleMuteChannel,
+    EditInEditor,
     // ReplyMessage,
     // DeleteMessage,
 }
@@ -435,6 +436,7 @@ ctrl-a = "beginning_of_line"
 end = "end_of_line"
 ctrl-e = "end_of_line"
 backspace = "delete_character previous"
+ctrl-o = "edit_in_editor"
 tab = "react"
 alt-m = "toggle_mute_channel"
 
@@ -469,6 +471,7 @@ ctrl-a = "beginning_of_line"
 end = "end_of_line"
 ctrl-e = "end_of_line"
 backspace = "delete_character previous"
+ctrl-o = "edit_in_editor"
 
 [multiline]
 down = "move_text next line"

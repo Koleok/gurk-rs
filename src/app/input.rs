@@ -100,6 +100,7 @@ impl App {
                 self.help_scroll.0 += 1
             }
             Command::ToggleMuteChannel => self.toggle_mute_channel(),
+            Command::EditInEditor => self.edit_in_editor(),
             Command::NoOp => {}
         }
         Ok(())
@@ -470,5 +471,46 @@ impl App {
         let clean_input = clean_input.trim().to_string();
 
         (clean_input, attachments)
+    }
+    fn edit_in_editor(&mut self) {
+        use std::process::{Command, Stdio};
+        use std::thread;
+        use std::time::Duration;
+
+        let editor = std::env::var("EDITOR")
+            .or_else(|_| std::env::var("VISUAL"))
+            .unwrap_or_else(|_| "vim".to_string());
+
+        let temp_path = std::env::temp_dir().join("gurk_msg.txt");
+        let _ = std::fs::write(&temp_path, &self.input.data);
+
+        let split_cmd = format!(
+            "tmux split-window -v -l 25% '{} {}'",
+            editor,
+            temp_path.display()
+        );
+
+        Command::new("sh")
+            .arg("-c")
+            .arg(split_cmd)
+            .stdin(Stdio::inherit())
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .spawn()
+            .ok();
+
+        loop {
+            if let Ok(content) = std::fs::read_to_string(&temp_path) {
+                let edited = content.trim().to_string();
+                if !edited.is_empty() {
+                    self.input.data = edited;
+                    self.input.on_end();
+                    break;
+                }
+            }
+            thread::sleep(Duration::from_millis(250));
+        }
+
+        let _ = std::fs::remove_file(temp_path);
     }
 }
